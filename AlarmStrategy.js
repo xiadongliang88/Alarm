@@ -280,10 +280,6 @@ class AlarmStrategy extends Component {
 
         const { projectId, appCode } = this.state
 
-        // console.log('projectId', projectId)
-        // console.log('appName', appName)
-
-        // this.initAppList(projectId, '')
         this.fetchData(projectId, appCode)
     }
 
