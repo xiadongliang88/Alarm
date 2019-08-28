@@ -46,14 +46,14 @@ class AlarmStrategy extends Component {
 
     componentDidMount() {
         const projectId = parseInt(
-            AppState.currentMenuType.projectId  // 获取projectId
+            AppState.currentMenuType.projectId
         )
 
         this.setState({
             projectId: projectId
         })
 
-        this.initAppList(projectId, 'firstLoading')  //  初始化应用列表
+        this.initAppList(projectId, 'firstLoading')
         this.getUsers(projectId)
     }
 
@@ -61,11 +61,10 @@ class AlarmStrategy extends Component {
         const { projectId, appCode } = this.state
 
         this.fetchData(projectId, appCode)
-        this.initAppList(projectId, '')  //  初始化应用列表
+        this.initAppList(projectId, '')
         this.getUsers(projectId)
     }
 
-    // 选择应用
     handleSelectApp = value => {
         let newValueObj = {}
 
@@ -88,7 +87,6 @@ class AlarmStrategy extends Component {
         }, 0)
     }
 
-    // 初始化应用选项
     initAppList(projectId, condition) {
         axios.get(
             `/devops/v1/projects/${projectId}/apps`
@@ -112,7 +110,6 @@ class AlarmStrategy extends Component {
             }
         })
 
-        // 获取projectCode
         axios.get(
             `iam/v1/projects/${projectId}`
         ).then(response => {
@@ -130,12 +127,10 @@ class AlarmStrategy extends Component {
         })
     }
 
-    // 拉取列表
     fetchData(projectId, appCode) {
         const pageSize = 10
         const pageNum = 1
 
-        // -> /v1/appalarmrule 告警策略列表
         axios.get(
             `/alert/v1/projects/${projectId}/appalarmrule?pageNum=${pageNum}&pageSize=${pageSize}&app_code=${appCode}`
         ).then(response => {
@@ -160,7 +155,7 @@ class AlarmStrategy extends Component {
             for (const item of response.content) {
                 newAry.push({
                     id: item.id,
-                    username: item.realName // username
+                    username: item.realName
                 })
             }
 
@@ -217,7 +212,6 @@ class AlarmStrategy extends Component {
     }
 
     handleOkModify = () => {
-        // -> /v1/appalarmrule/{id}  ->  Update alarm rule by id
         this.hideSidebar('modify')
 
         const { projectId, appCode } = this.state
@@ -231,11 +225,9 @@ class AlarmStrategy extends Component {
     handleDiscontinue = (text, record) => {
         const { projectId, appCode } = this.state
 
-        // loading
         this.setState({ loading: true })
 
         if (record.is_enabled === true) {
-            // -> /v1/appalarmrule/{id}/disable
             axios.post(
                 `/alert/v1/projects/${projectId}/appalarmrule/${record.id}/disable`
             ).then(response => {
@@ -250,7 +242,6 @@ class AlarmStrategy extends Component {
             })
         }
         else if (record.is_enabled === false) {
-            // -> /v1/appalarmrule/{id}/enable
             axios.post(
                 `/alert/v1/projects/${projectId}/appalarmrule/${record.id}/enable`
             ).then(response => {
@@ -298,7 +289,6 @@ class AlarmStrategy extends Component {
 
         const { projectId, appCode } = this.state
 
-        // -> /v1/appalarmrule 告警策略列表
         axios.get(
             `/alert/v1/projects/${projectId}/appalarmrule?pageNum=${page.current}&pageSize=${page.pageSize}&app_name=${appCode}`
         ).then(response => {
@@ -469,16 +459,16 @@ class AlarmStrategy extends Component {
                             <Table
                                 rowKey={record => record.id}
                                 className="c7n-devops-instance-table marginT5"
-                                dataSource={this.state.alarmStrategy}  //  -> 数据
+                                dataSource={this.state.alarmStrategy}
                                 columns={columns}
-                                pagination={{  //  -> 分页
+                                pagination={{
                                     total: this.state.pagination.total,
                                     pageSize: this.state.pagination.pageSize,
                                     current: this.state.pagination.current,
                                     pageSizeOptions: ['10', '30', '50', '100'],
                                     defaultCurrent: 1
                                 }}
-                                onChange={this.handlePageOnChange}  //  -> 分页动作
+                                onChange={this.handlePageOnChange}
                                 selections={true}
                             >
                             </Table>

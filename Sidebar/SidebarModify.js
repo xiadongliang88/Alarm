@@ -13,17 +13,11 @@ class SidebarModify extends Component {
     }
 
     state = {
-        // 策略名称
         name: this.props.record.name,
-        // 统计周期
         interval: this.props.record.interval,
-        // 统计阈值
         threshold: this.props.record.threshold,
-        // 告警对象
-        recipients: this.props.record.recipients, // xxxx
-        // 用户列表
+        recipients: this.props.record.recipients,
         users: [],
-        // 关系
         relationship: '',
         relationshipOpt: [
             {
@@ -35,7 +29,6 @@ class SidebarModify extends Component {
                 value:'OR'
             }
         ],
-        // 主键
         primaryKey: '',
         primaryKeyOpt: [
             'appname', 
@@ -132,8 +125,6 @@ class SidebarModify extends Component {
 
     handleInput = (e, variable) => {
         if (variable === 'name') {
-            console.log('name')
-
             const projectId = this.props.projectId
             const appName = this.props.appInfo.name
             const value = e.target.value
@@ -162,9 +153,7 @@ class SidebarModify extends Component {
         })
     }
 
-    // 告警渠道
     handleChannelSelect = (value, e, index) => {
-        // channelAry
         let newChannelAry = [ ...this.state.channelAry ]
 
         newChannelAry[index].label = value
@@ -175,7 +164,6 @@ class SidebarModify extends Component {
         })
     }
 
-    // 告警内容
     handleAddChange = (index, e) => {
         let newChannelAry = [ ...this.state.channelAry ]
 
@@ -186,8 +174,7 @@ class SidebarModify extends Component {
         })
     }
 
-    // 告警对象 -> 多选
-    handleMultSelect = (value, ary) => {  //
+    handleMultSelect = (value, ary) => {
         let newAry = []
 
         for (const item of ary) {
@@ -208,7 +195,6 @@ class SidebarModify extends Component {
         })
     }
 
-    // 添加告警渠道
     handleAddChannel = () => {
         let channelAry = [ ...this.state.channelAry ]
 
@@ -296,8 +282,6 @@ class SidebarModify extends Component {
     }
 
     handleRelationOutSide = (value, index) => {
-        // console.log('handleRelationOutSide', value, index)
-
         let newList = [ ...this.state.filterRule ]
 
         newList[index].relation = value
@@ -307,10 +291,7 @@ class SidebarModify extends Component {
         })
     }
 
-    // 新增一条二级对象
-    handleAddSub = (index, subIndex) => {  //
-        // console.log(index, subIndex)
-
+    handleAddSub = (index, subIndex) => {
         let newList = [ ...this.state.filterRule ]
 
         if (newList[index].children) {
@@ -325,16 +306,10 @@ class SidebarModify extends Component {
         this.setState({
             filterRule: newList
         })
-
-        // setTimeout(console.log('filterRule', this.state.filterRule))
     }
 
-    // 删除当前二级对象
     handleDeleteSub = (index, subIndex) => {
         let newList = [ ...this.state.filterRule ]
-        // console.log('newList', newList)
-
-        // console.log(newList[index].children.length)
 
         if (newList[index].children.length > 1) {
             newList[index].children.splice(subIndex, 1)
@@ -345,11 +320,8 @@ class SidebarModify extends Component {
         } else {
             message.error('每个规则组至少有一项')
         }
-
-        // setTimeout(console.log('filterRule', this.state.filterRule))
     }
 
-    // 新增规则组
     handleAddItem = () => {
         let newList = [ ...this.state.filterRule ]
 
@@ -384,7 +356,6 @@ class SidebarModify extends Component {
         }
     }
 
-    // 确定
     handleOkModify = () => {
         let filterRuleCheck = true
         const channelAry = [ ...this.state.channelAry ]
@@ -396,21 +367,13 @@ class SidebarModify extends Component {
         for (let i = 0; i < filterRule.length; i++) {
 
             for (let k = 0; k < filterRule[i].children.length ; k++) {
-                if (filterRule[i].children[k].field === '') {
-                    filterRuleCheck = false
-                }
+                if (filterRule[i].children[k].field === '') return filterRuleCheck = false
 
-                if (filterRule[i].children[k].condition === '') {
-                    filterRuleCheck = false
-                }
+                if (filterRule[i].children[k].condition === '') return filterRuleCheck = false
 
-                if (filterRule[i].children[k].query === '' || regS.test(filterRule[i].children[k].query) === false) {
-                    filterRuleCheck = false
-                }
+                if (filterRule[i].children[k].query === '' || regS.test(filterRule[i].children[k].query) === false) return filterRuleCheck = false
 
-                if (filterRule[i].children[k].relation === '' && k !== filterRule[i].children.length - 1) {
-                    filterRuleCheck = false
-                }
+                if (filterRule[i].children[k].relation === '' && k !== filterRule[i].children.length - 1) return filterRuleCheck = false
             }
         }
 
@@ -420,7 +383,7 @@ class SidebarModify extends Component {
             newLabels.push(item.label)
         }
 
-        const newLabelsSort = newLabels.slice().sort()  //  排序
+        const newLabelsSort = newLabels.slice().sort()
 
         let channelCheck = true
 
@@ -437,7 +400,6 @@ class SidebarModify extends Component {
 
         const regIsNum = /^\d+$/
 
-        // 策略名称校验
         if (this.state.nameRepeat === true) {
             message.error('策略名称已存在')
             return
@@ -447,7 +409,6 @@ class SidebarModify extends Component {
             return
         }
 
-        // interval 统计周期
         if (!regIsNum.test(this.state.interval)) {
             message.error('统计周期必须为数字')
             return
@@ -458,7 +419,6 @@ class SidebarModify extends Component {
             return
         }
 
-        // threshold 告警阈值
         if (!regIsNum.test(this.state.threshold)) {
             message.error('告警阈值必须为数字')
             return
@@ -725,7 +685,7 @@ class SidebarModify extends Component {
                         mode="multiple"
                         style={{width:480}}
                         optionFilterProp="children"
-                        value={this.state.values}  //
+                        value={this.state.values}
                         onChange={this.handleMultSelect}
                         filter
                     >

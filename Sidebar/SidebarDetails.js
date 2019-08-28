@@ -8,17 +8,12 @@ const contentsDOM = props => {
 
     for (const key in props.record.channel_templates) {
         let label
-        
-        if (key === 'sms') {
-            label = '短信'
-        }
-        if (key === 'wechat') {
-            label = '企业微信'
-        }
 
-        if (key === 'email') {
-            label = '邮件'
-        }
+        if (key === 'sms') return label = '短信'
+
+        if (key === 'wechat') return label = '企业微信'
+
+        if (key === 'email') return label = '邮件'
 
         channelAry.push({
             key: key,
@@ -56,7 +51,6 @@ const contentsDOM = props => {
 }
 
 const SidebarDetails = props => {
-    // console.log(props)
     return (
         <Sidebar
             title="详情"

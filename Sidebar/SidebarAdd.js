@@ -7,20 +7,13 @@ const { Sidebar } = Modal
 
 class SidebarModify extends Component {
     state = {
-        // 策略名称
         name: '',
-        // 统计周期
         interval: 1,
-        // 统计阈值
         threshold: 1,
-        // 告警对象
         recipients: '',
-        // 用户列表
         users: [],
-        // 关系
         relationship: '',
         relationshipOpt: ['AND', 'OR'],
-        // 主键
         primaryKey: '',
         primaryKeyOpt: [
             'appname',
@@ -146,7 +139,6 @@ class SidebarModify extends Component {
         })
     }
 
-    // 告警渠道
     handleChannelSelect = (value, e, index) => {
         let newChannelAry = [ ...this.state.channelAry ]
 
@@ -158,7 +150,6 @@ class SidebarModify extends Component {
         })
     }
 
-    // 告警内容
     handleAddChange = (index, e) => {
         let newChannelAry = [ ...this.state.channelAry ]
 
@@ -167,11 +158,8 @@ class SidebarModify extends Component {
         this.setState({
             channelAry: newChannelAry
         })
-
-        // setTimeout(console.log('channelAry', this.state.channelAry), 0)
     }
 
-    // 告警对象 -> 多选
     handleMultSelect = (value, ary) => {
         let newAry = []
 
@@ -193,7 +181,6 @@ class SidebarModify extends Component {
         })
     }
 
-    // 添加告警渠道
     handleAddChannel = () => {
         let channelAry = [ ...this.state.channelAry ]
 
@@ -205,8 +192,6 @@ class SidebarModify extends Component {
         this.setState({
             channelAry: channelAry
         })
-
-        // setTimeout(console.log('channelAry', this.state.channelAry), 0)
     }
 
     handleDeleteChannel = index => {
@@ -221,8 +206,6 @@ class SidebarModify extends Component {
         } else {
             message.error('告警内容至少为一项')
         }
-
-        // setTimeout(console.log(this.state.channelAry), 0)
     }
 
     alarmContent = () => {
@@ -265,8 +248,6 @@ class SidebarModify extends Component {
     }
 
     handleSubItemSelect = (value, subIndex, index, variable) => {
-        // console.log('handleSubItemSelect', value, subIndex, index, variable)
-
         let newList = [ ...this.state.filterRule ]
 
         newList[index].children[subIndex][variable] = value
@@ -274,13 +255,9 @@ class SidebarModify extends Component {
         this.setState({
             filterRule: newList
         })
-
-        // setTimeout(console.log('filterRule', this.state.filterRule))
     }
 
     handleSubItemInput = (e, subIndex, index, variable) => {
-        // console.log(e, e.target.value)
-
         let newList = [ ...this.state.filterRule ]
 
         newList[index].children[subIndex][variable] = e.target.value
@@ -288,13 +265,9 @@ class SidebarModify extends Component {
         this.setState({
             filterRule: newList
         })
-
-        // setTimeout(console.log('filterRule', this.state.filterRule))
     }
 
     handleRelationOutSide = (value, index) => {
-        // console.log('handleRelationOutSide', value, index)
-
         let newList = [ ...this.state.filterRule ]
 
         newList[index].relation = value
@@ -302,11 +275,8 @@ class SidebarModify extends Component {
         this.setState({
             filterRule: newList
         })
-
-        // setTimeout(console.log('filterRule', this.state.filterRule))
     }
 
-    // 新增一条二级对象
     handleAddSub = (index, subIndex) => {
         let newList = [ ...this.state.filterRule ]
 
@@ -322,11 +292,8 @@ class SidebarModify extends Component {
         this.setState({
             filterRule: newList
         })
-
-        // setTimeout(console.log('filterRule', this.state.filterRule))
     }
 
-    // 删除当前二级对象
     handleDeleteSub = (index, subIndex) => {
         let newList = [ ...this.state.filterRule ]
 
@@ -339,14 +306,9 @@ class SidebarModify extends Component {
         } else {
             message.error('每个规则组至少有一项')
         }
-
-        // setTimeout(console.log('filterRule', this.state.filterRule))
     }
 
-    // 新增规则组
     handleAddItem = () => {
-        // console.log('handleAddItem')
-
         let newList = [ ...this.state.filterRule ]
 
         newList.push({
@@ -380,14 +342,9 @@ class SidebarModify extends Component {
         }
     }
 
-    // 确定
     handleOkModify = () => {
         let filterRuleCheck = true
         const channelAry = [ ...this.state.channelAry ]
-
-        // 告警规则校验
-        // console.log('filterRule', this.state.filterRule)
-
         const { filterRule } = this.state
 
         for (let i = 0; i < filterRule.length; i++) {
@@ -407,9 +364,7 @@ class SidebarModify extends Component {
             }
         }
 
-        // 告警渠道校验
         const newAry = channelAry.slice().sort()
-        // console.log('channelAry', channelAry)
 
         let channelCheck = true
 
@@ -420,11 +375,8 @@ class SidebarModify extends Component {
             }
         }
 
-        // console.log('channelCheck', channelCheck)
-
         const reg = /^\d+$/
 
-        // 策略名称校验
         if (this.state.nameRepeat === true) {
             message.error('策略名称已存在')
             return
@@ -434,7 +386,6 @@ class SidebarModify extends Component {
             return
         }
 
-        // interval 统计周期
         if (!reg.test(this.state.interval)) {
             message.error('统计周期必须为数字')
             return
@@ -445,7 +396,6 @@ class SidebarModify extends Component {
             return
         }
 
-        // threshold 告警阈值
         if (!reg.test(this.state.threshold)) {
             message.error('告警阈值必须为数字')
             return
