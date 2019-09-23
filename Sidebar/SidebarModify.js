@@ -230,8 +230,12 @@ class SidebarModify extends Component {
                         <div key={index} className="AlarmStrategy-span-contents-item">
                             <div className="AlarmStrategy-p">
                                 <span className="AlarmStrategy-span-label gray">
-                                    <span style={{color: "red"}}>*</span>
-                                    <span className="marginL5">告警渠道:</span>
+                                    <span style={{color: "red"}}>
+                                        *
+                                    </span>
+                                    <span className="marginL5">
+                                        告警渠道:
+                                    </span>
                                 </span>
                                 <Select style={{width:480}} value={item.label} onSelect={(value, e) => this.handleChannelSelect(value, e, index)}>
                                     {
@@ -246,8 +250,12 @@ class SidebarModify extends Component {
                             </div>
                             <div className="AlarmStrategy-m marginT10">
                                 <span className="AlarmStrategy-span-label-sub gray">
-                                    <span style={{color: "red"}}>*</span>
-                                    <span className="marginL5">告警消息:</span>
+                                    <span style={{color: "red"}}>
+                                        *
+                                    </span>
+                                    <span className="marginL5">
+                                        告警消息:
+                                    </span>
                                 </span>
                                 <textarea rows="3" cols="80" value={item.value} onChange={e => this.handleAddChange(index, e)} />
                             </div>
@@ -510,31 +518,51 @@ class SidebarModify extends Component {
             >
                 <div className="AlarmStrategy-p marginT20">
                     <span className="AlarmStrategy-span-label">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">策略名称:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            策略名称:
+                        </span>
                     </span>
                     <Input style={{width:480}} value={this.state.name} onChange={e => this.handleInput(e, 'name')} maxLength={32} />
                 </div>
                 <div className="AlarmStrategy-p marginT20">
                     <span className="AlarmStrategy-span-label">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">统计周期:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            统计周期:
+                        </span>
                     </span>
                     <Input style={{width:480}} value={this.state.interval} placeholder='输入1-1440之间任意数' onChange={e => this.handleInput(e, 'interval')} type='number' />{` 分`}
-                    <p className="gray marginL80">输入1-1440之间任意数, 默认值为1</p>
+                    <p className="gray marginL80">
+                        输入1-1440之间任意数, 默认值为1
+                    </p>
                 </div>
                 <div className="AlarmStrategy-p marginT20">
                     <span className="AlarmStrategy-span-label">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">告警阈值:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            告警阈值:
+                        </span>
                     </span>
                     <Input style={{width:480}} value={this.state.threshold} placeholder='输入1-32767之间任意数' onChange={e => this.handleInput(e, 'threshold')} />
-                    <p className="gray marginL80">输入1-32767之间任意数, 默认值为1</p>
+                    <p className="gray marginL80">
+                        输入1-32767之间任意数, 默认值为1
+                    </p>
                 </div>
                 <div className="AlarmStrategy-p marginT20">
                     <span className="AlarmStrategy-span-label">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">告警规则:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            告警规则:
+                        </span>
                     </span>
                     {
                         this.state.filterRule.map((item, index) =>
@@ -545,8 +573,7 @@ class SidebarModify extends Component {
                                     header={
                                         <span className="AlarmStrategy-span">
                                             <div style={{display: "none"}}>
-                                                <Select style={{width: 120}} disabled>
-                                                </Select>
+                                                <Select style={{width: 120}} disabled />
                                             </div>
                                             <Icon className="marginL20" type="delete" style={{float: "right", cursor: "pointer"}} onClick={() => this.handleDeleteItem(index)} />
                                         </span>
@@ -678,8 +705,12 @@ class SidebarModify extends Component {
                 </Button>
                 <div className="AlarmStrategy-p marginT40">
                     <span className="AlarmStrategy-span-label">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">告警对象:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            告警对象:
+                        </span>
                     </span>
                     <Select
                         mode="multiple"
@@ -689,13 +720,20 @@ class SidebarModify extends Component {
                         onChange={this.handleMultSelect}
                         filter
                     >
-                        {this.props.getUsers.length ? this.props.getUsers.map(item => <Select.Option key={item.id} value={item.username}>{item.username}</Select.Option>) : null}
+                        {
+                            this.props.getUsers.length ? this.props.getUsers.map(item => 
+                                <Select.Option key={item.id} value={item.username}>{item.username}</Select.Option>) : null
+                        }
                     </Select>
                 </div>
                 <div className="AlarmStrategy-p marginT20">
                     <span className="AlarmStrategy-span-contents">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">告警内容:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            告警内容:
+                        </span>
                     </span>
                     <div>
                         {this.alarmContent()}
