@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { Modal, Input, Select, Icon, List, message } from 'choerodon-ui'
-import { Content, Header, Page, stores, axios} from "choerodon-front-boot"
-import { Button } from 'choerodon-ui/lib/radio';
+import { axios} from "choerodon-front-boot"
+import { Button } from 'choerodon-ui/lib/radio'
 
 const { Sidebar } = Modal
 
@@ -496,31 +496,51 @@ class SidebarModify extends Component {
             >
                 <div className="AlarmStrategy-p marginT20">
                     <span className="AlarmStrategy-span-label">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">策略名称:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            策略名称:
+                        </span>
                     </span>
                     <Input style={{width:480}} value={this.state.name} onChange={e => this.handleInput(e, 'name')} maxLength={32} />
                 </div>
                 <div className="AlarmStrategy-p marginT20">
                     <span className="AlarmStrategy-span-label">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">统计周期:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            统计周期:
+                        </span>
                     </span>
                     <Input style={{width:480}} value={this.state.interval} placeholder='输入1-1440之间任意数' onChange={e => this.handleInput(e, 'interval')} type='number' />{` 分`}
-                    <p className="gray marginL80">输入1-1440之间任意数, 默认值为1</p>
+                    <p className="gray marginL80">
+                        输入1-1440之间任意数, 默认值为1
+                    </p>
                 </div>
                 <div className="AlarmStrategy-p marginT20">
                     <span className="AlarmStrategy-span-label">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">告警阈值:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            告警阈值:
+                        </span>
                     </span>
                     <Input style={{width:480}} value={this.state.threshold} placeholder='输入1-32767之间任意数' onChange={e => this.handleInput(e, 'threshold')} type='number' />
-                    <p className="gray marginL80">输入1-32767之间任意数, 默认值为1</p>
+                    <p className="gray marginL80">
+                        输入1-32767之间任意数, 默认值为1
+                    </p>
                 </div>
                 <div className="AlarmStrategy-p marginT20">
                     <span className="AlarmStrategy-span-label">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">告警规则:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            告警规则:
+                        </span>
                     </span>
                     {
                         this.state.filterRule.map((item, index) =>
@@ -632,11 +652,13 @@ class SidebarModify extends Component {
                                                 <Input style={{width: 300}} placeholder="字段对应值" value={subItem.query} onChange={e => this.handleSubItemInput(e, subIndex, index, 'query')} />
                                             </span>
                                             <Select style={{width: 80}} placeholder="关系" value={subItem.relation} onSelect={value => this.handleSubItemSelect(value, subIndex, index, 'relation')} className="marginL20">
-                                                {this.state.subRelationOpt.map(optItem =>
-                                                    <Select.Option key={optItem}>
-                                                        {optItem}
-                                                    </Select.Option>
-                                                )}
+                                                {
+                                                    this.state.subRelationOpt.map(optItem =>
+                                                        <Select.Option key={optItem}>
+                                                            {optItem}
+                                                        </Select.Option>
+                                                    )
+                                                }
                                             </Select>
                                             <Button
                                                 className="marginL20"
@@ -664,8 +686,12 @@ class SidebarModify extends Component {
                 </Button>
                 <div className="AlarmStrategy-p marginT40">
                     <span className="AlarmStrategy-span-label">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">告警对象:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            告警对象:
+                        </span>
                     </span>
                     <Select
                         mode="multiple"
@@ -675,13 +701,20 @@ class SidebarModify extends Component {
                         onChange={this.handleMultSelect}
                         filter
                     >
-                        {this.props.getUsers.length ? this.props.getUsers.map(item => <Select.Option key={item.id} value={item.username}>{item.username}</Select.Option>) : null}
+                        {
+                            this.props.getUsers.length ? this.props.getUsers.map(item => 
+                                <Select.Option key={item.id} value={item.username}>{item.username}</Select.Option>) : null
+                        }
                     </Select>
                 </div>
                 <div className="AlarmStrategy-p marginT20">
                     <span className="AlarmStrategy-span-contents">
-                        <span style={{color: "red"}}>*</span>
-                        <span className="marginL5">告警内容:</span>
+                        <span style={{color: "red"}}>
+                            *
+                        </span>
+                        <span className="marginL5">
+                            告警内容:
+                        </span>
                     </span>
                     <div>
                         {this.alarmContent()}
