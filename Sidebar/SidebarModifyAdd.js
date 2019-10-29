@@ -1,29 +1,29 @@
-import React, { Component, Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Modal, Input, Select, Icon, List, message } from 'choerodon-ui'
-import { axios} from "choerodon-front-boot"
+import { axios } from "choerodon-front-boot"
 import { Button } from 'choerodon-ui/lib/radio'
 
 const { Sidebar } = Modal
 
 let children = []
 
-class SidebarModify extends Component {
-    constructor(props){
+class SidebarModifyAdd extends PureComponent {
+    constructor(props) {
         super(props)
     }
 
     state = {
-        name: this.props.record.name,
-        interval: this.props.record.interval,
-        threshold: this.props.record.threshold,
-        recipients: this.props.record.recipients,
+        name: this.props.mode === 'Modify'? this.props.record.name : '',
+        interval: this.props.mode === 'Modify'? this.props.record.interval : 1,
+        threshold: this.props.mode === 'Modify'? this.props.record.threshold : 1,
+        recipients: this.props.mode === 'Modify'? this.props.record.recipients : '',
         users: [],
         relationship: '',
         relationshipOpt: [
             {
                 key: 'and',
                 value: 'AND'
-            }, 
+            },
             {
                 key: 'or',
                 value:'OR'
@@ -31,13 +31,11 @@ class SidebarModify extends Component {
         ],
         primaryKey: '',
         primaryKeyOpt: [
-            'appname', 
             'message', 
             'env', 
             '@version', 
             '@timestamp', 
-            'host', 
-            'project',
+            'host',
             'type',
             'status',
             'ip',
@@ -70,8 +68,14 @@ class SidebarModify extends Component {
                 value: '小于等于'
             }
         ],
-        channelAry: this.handleChannelAry(),
-        channelOpt: [
+        channelAry: this.props.mode === 'Modify' ? this.handleChannelAry() : [
+            {
+                label: '',
+                value: '',
+                disabled: false
+            }
+        ],
+        channelOptOrg: [
             {
                 label: 'wechat',
                 value: '企业微信',
@@ -88,14 +92,29 @@ class SidebarModify extends Component {
                 message: '策略:{{rule_name}}\n项目:{{project_name}}\n服务:{{app_name}}\n异常次数:{{error_count}}\n发生时间:{{date_time}}\n链接地址:{{kibana_url}}'
             }
         ],
-        filterRule: this.props.record.filter_rule,
+        channelOptAry: [],
+        filterRule: this.props.mode === 'Modify' ? this.props.record.filter_rule : [
+            {
+                relation: '',
+                children: [
+                    {
+                        field: '',
+                        condition: '',
+                        query: '',
+                        relation: ''
+                    }
+                ]
+            }
+        ],
         newRuleList: [],
         multSelect: [],
         values: [],
-        nameRepeat: false
+        nameRepeat: false,
+        getUsers: this.props.getUsers
     }
 
     componentDidMount() {
+
         const recipients = [ ...this.state.recipients ]
 
         let recipientsUsers = []
@@ -106,25 +125,118 @@ class SidebarModify extends Component {
         this.setState({
             values: recipientsUsers
         })
+
+        const initChannel = this.initChannel()
+
+        this.setState({
+            channelAry: initChannel.channelAry,
+            channelOptAry: initChannel.channelOptAry
+        })
     }
 
-    handleChannelAry() {
+    initChannel = () => {
+
+        let channelAry = [ ...this.state.channelAry ]
+        let channelOptAry = [ ...this.state.channelOptAry ]
+
+        if (channelAry.length === 1) {
+
+            let channelOptOrg = [ ...this.state.channelOptOrg ]
+
+            channelOptAry.push(channelOptOrg)
+
+        } else if (channelAry.length === 2 || channelAry.length === 3) {
+
+            let channelOptOrg = [ ...this.state.channelOptOrg ]
+            let labelIndex1
+            let labelIndex2
+            let labelIndex3
+            let kAry = []
+            let lastOne
+
+            for (let i = 0; i < channelAry.length; i++) {
+                for (let k = 0; k < channelOptOrg.length; k++) {
+
+                    if (channelAry[i].label === channelOptOrg[k].label) {
+
+                        kAry.push(k)
+                    } else {
+
+                        lastOne = k
+                    }
+                }
+            }
+
+            if (kAry.length === 2) {
+
+                labelIndex1 = kAry[0]
+                labelIndex2 = kAry[1]
+                labelIndex3 = lastOne
+                channelOptAry.push(channelOptOrg)
+                channelOptAry.push([ channelOptOrg[labelIndex2], channelOptOrg[labelIndex3] ])
+                channelAry[0].disabled = true
+            }
+
+            if (kAry.length === 3) {
+
+                labelIndex1 = kAry[0]
+                labelIndex2 = kAry[1]
+                labelIndex3 = kAry[2]
+                channelOptAry.push(channelOptOrg)
+                channelOptAry.push([ channelOptOrg[labelIndex2], channelOptOrg[labelIndex3] ])
+                channelOptAry.push([ channelOptOrg[labelIndex3] ])
+                channelAry[0].disabled = true
+                channelAry[1].disabled = true
+            }
+        }
+
+        return { channelAry: channelAry, channelOptAry: channelOptAry } 
+    }
+
+    loopTemp(temp) {
+
         let channelAry = []
 
-        const channelTemplates = { ...this.props.record.channel_templates }
+        const words = [
+            'wechat',
+            'sms',
+            'email'
+        ]
 
-        for (let key in channelTemplates) {
-            channelAry.push({
-                label: key,
-                value: channelTemplates[key]
-            })
+        for (const item of words) {
+            for (const subItem of temp) {
+                if (subItem.label === item) {
+                    channelAry.push(subItem)
+                    break
+                }
+            }
         }
 
         return channelAry
     }
 
+    handleChannelAry() {
+
+        let temp = []
+        const channelTemplates = { ...this.props.record.channel_templates }
+
+        for (let key in channelTemplates) {
+            temp.push({
+                label: key,
+                value: channelTemplates[key],
+                disabled: false
+            })
+        }
+
+        const channelAry = this.loopTemp(temp)
+
+        return channelAry
+    }
+
     handleInput = (e, variable) => {
+
         if (variable === 'name') {
+
             const projectId = this.props.projectId
             const appName = this.props.appInfo.name
             const value = e.target.value
@@ -136,10 +248,12 @@ class SidebarModify extends Component {
                 ).then(response => {
 
                     if (response.results instanceof Array && response.results.length > 0) {
+
                         this.setState({
                             nameRepeat: true
                         })
                     } else {
+
                         this.setState({
                             nameRepeat: false
                         })
@@ -154,6 +268,7 @@ class SidebarModify extends Component {
     }
 
     handleChannelSelect = (value, e, index) => {
+
         let newChannelAry = [ ...this.state.channelAry ]
 
         newChannelAry[index].label = value
@@ -165,6 +280,7 @@ class SidebarModify extends Component {
     }
 
     handleAddChange = (index, e) => {
+
         let newChannelAry = [ ...this.state.channelAry ]
 
         newChannelAry[index].value = e.target.value
@@ -175,6 +291,7 @@ class SidebarModify extends Component {
     }
 
     handleMultSelect = (value, ary) => {
+
         let newAry = []
 
         for (const item of ary) {
@@ -195,34 +312,103 @@ class SidebarModify extends Component {
         })
     }
 
-    handleAddChannel = () => {
-        let channelAry = [ ...this.state.channelAry ]
+    handleRemoteSearch = value => {
 
-        channelAry.push({
-            label: '',
-            value: ''
-        })
+        axios.get(
+            `/iam/v1/projects/${this.props.projectId}/users?param=${value}`
+        ).then(response => {
+            let newAry = []
 
-        this.setState({
-            channelAry: channelAry
+            for (const item of response.content) {
+                newAry.push({
+                    id: item.id,
+                    username: item.realName
+                })
+            }
+
+            this.setState({
+                getUsers: newAry
+            })
         })
     }
 
-    handleDeleteChannel = index => {
-        let channelAry = [ ...this.state.channelAry ]
+    handleAddChannel = () => {
 
-        if (channelAry.length > 1) {
-            channelAry.splice(index, 1)
+        let channelAry = [ ...this.state.channelAry ]
+        let channelOptAry = [ ...this.state.channelOptAry ]
+
+        if (channelAry.length >= 3) {
+            message.error('告警渠道最多为3项')
+            return
+        }
+
+        if (
+            channelAry.length >= 1 &&
+            (channelAry[channelAry.length - 1].label === ''|| channelAry[channelAry.length - 1].value === '')
+        ) {
+            message.error('告警渠道未填写')
+            return
+        }
+
+        if (channelAry.length === 0) {
+
+            channelOptAry.push(this.state.channelOptOrg)
+            channelAry.push({
+                label: '',
+                value: ''
+            })
+        } 
+        else if (channelAry.length >= 1) {
+
+            const preLabel = channelAry[channelAry.length - 1].label
+
+            let ary = [ ...channelOptAry[channelOptAry.length - 1] ]
+
+            for (let i = 0 ; i < ary.length; i++) {
+                if (preLabel === ary[i].label) {
+                    ary.splice(i, 1)
+                }
+            }
+
+            channelOptAry.push(ary)
+            channelAry.push({
+                label: '',
+                value: '',
+                disabled: false
+            })
+
+            channelAry[channelAry.length - 2].disabled = true
 
             this.setState({
+                channelOptAry: channelOptAry,
                 channelAry: channelAry
             })
+        }
+    }
+
+    handleDeleteChannel = index => {
+
+        let channelAry = [ ...this.state.channelAry ]
+        let channelOptAry = [ ...this.state.channelOptAry ]
+
+        if (channelAry.length > 1) {
+
+            channelAry.splice(index, 1)
+            channelOptAry.pop()
+            channelAry[channelAry.length - 1].disabled = false
+
+            this.setState({
+                channelAry: channelAry,
+                channelOptAry: channelOptAry
+            })
         } else {
+
             message.error('告警内容至少为一项')
         }
     }
 
     alarmContent = () => {
+
         return (
             <Fragment>
                 {
@@ -237,13 +423,14 @@ class SidebarModify extends Component {
                                         告警渠道:
                                     </span>
                                 </span>
-                                <Select style={{width:480}} value={item.label} onSelect={(value, e) => this.handleChannelSelect(value, e, index)}>
+                                <Select style={{width:480}} value={item.label} disabled={item.disabled} onSelect={(value, e) => this.handleChannelSelect(value, e, index)}>
                                     {
-                                        this.state.channelOpt.map(optItem =>
-                                            <Select.Option key={optItem.label} value={optItem.label} message={optItem.message}>
-                                                {optItem.value}
-                                            </Select.Option>
-                                        )
+                                        this.state.channelOptAry instanceof Array && this.state.channelOptAry.length > 0 ?
+                                        this.state.channelOptAry[index] instanceof Array && this.state.channelOptAry[index].map(optItem =>
+                                                <Select.Option key={optItem.label} value={optItem.label} message={optItem.message}>
+                                                    {optItem.value}
+                                                </Select.Option>
+                                            ) : null
                                     }
                                 </Select>
                                 <Icon className="marginL20" type="delete" style={{float: "right", cursor: "pointer"}} onClick={() => this.handleDeleteChannel(index)} />
@@ -270,6 +457,7 @@ class SidebarModify extends Component {
     }
 
     handleSubItemSelect = (value, subIndex, index, variable) => {
+
         let newList = [ ...this.state.filterRule ]
 
         newList[index].children[subIndex][variable] = value
@@ -280,6 +468,7 @@ class SidebarModify extends Component {
     }
 
     handleSubItemInput = (e, subIndex, index, variable) => {
+
         let newList = [ ...this.state.filterRule ]
 
         newList[index].children[subIndex][variable] = e.target.value
@@ -290,6 +479,7 @@ class SidebarModify extends Component {
     }
 
     handleRelationOutSide = (value, index) => {
+
         let newList = [ ...this.state.filterRule ]
 
         newList[index].relation = value
@@ -299,7 +489,8 @@ class SidebarModify extends Component {
         })
     }
 
-    handleAddSub = (index, subIndex) => {
+    handleAddSub = index => {
+
         let newList = [ ...this.state.filterRule ]
 
         if (newList[index].children) {
@@ -317,6 +508,7 @@ class SidebarModify extends Component {
     }
 
     handleDeleteSub = (index, subIndex) => {
+
         let newList = [ ...this.state.filterRule ]
 
         if (newList[index].children.length > 1) {
@@ -331,6 +523,7 @@ class SidebarModify extends Component {
     }
 
     handleAddItem = () => {
+
         let newList = [ ...this.state.filterRule ]
 
         newList.push({
@@ -351,6 +544,7 @@ class SidebarModify extends Component {
     }
 
     handleDeleteItem = index => {
+
         let newList = [ ...this.state.filterRule ]
 
         if (newList.length > 1) {
@@ -364,10 +558,10 @@ class SidebarModify extends Component {
         }
     }
 
-    handleOkModify = () => {
+    handleOkModifyAdd = () => {
+
         let filterRuleCheck = true
         const channelAry = [ ...this.state.channelAry ]
-
         const { filterRule } = this.state
 
         const regS = /^\S+$/
@@ -375,13 +569,21 @@ class SidebarModify extends Component {
         for (let i = 0; i < filterRule.length; i++) {
 
             for (let k = 0; k < filterRule[i].children.length ; k++) {
-                if (filterRule[i].children[k].field === '') return filterRuleCheck = false
+                if (filterRule[i].children[k].field === '') {
+                    filterRuleCheck = false
+                }
 
-                if (filterRule[i].children[k].condition === '') return filterRuleCheck = false
+                if (filterRule[i].children[k].condition === '') {
+                    filterRuleCheck = false
+                }
 
-                if (filterRule[i].children[k].query === '' || regS.test(filterRule[i].children[k].query) === false) return filterRuleCheck = false
+                if (filterRule[i].children[k].query === '' || regS.test(filterRule[i].children[k].query) === false) {
+                    filterRuleCheck = false
+                }
 
-                if (filterRule[i].children[k].relation === '' && k !== filterRule[i].children.length - 1) return filterRuleCheck = false
+                if (filterRule[i].children[k].relation === '' && k !== filterRule[i].children.length - 1) {
+                    filterRuleCheck = false
+                }
             }
         }
 
@@ -391,7 +593,7 @@ class SidebarModify extends Component {
             newLabels.push(item.label)
         }
 
-        const newLabelsSort = newLabels.slice().sort()
+        const newLabelsSort = newLabels.slice().sort()  //  排序
 
         let channelCheck = true
 
@@ -412,6 +614,7 @@ class SidebarModify extends Component {
             message.error('策略名称已存在')
             return
         }
+
         if (this.state.name === '') {
             message.error('策略名称不能为空')
             return
@@ -480,30 +683,70 @@ class SidebarModify extends Component {
             channelTemplates[channelAry[i].label] = channelAry[i].value
         }
 
-        const data = {
-            name: this.state.name,
-            app_info: this.props.record.app_info,
-            is_enabled: this.props.record.is_enabled,
-            interval: this.state.interval,
-            threshold: this.state.threshold,
-            filter_rule: this.state.filterRule,
-            recipients: this.state.recipients,
-            channel_templates: channelTemplates
-        }
-
         const { projectId } = this.props
         const { id } = this.props.record
 
-        axios.put(`/alert/v1/projects/${projectId}/appalarmrule/${id}`, data).then(res => {
-            if (res) {
-                message.success('修改规则成功')
-                this.props.handleOkModify()
-            } else {
-                message.success('修改规则失败')
+        const appInfo = {
+            app_code: this.props.appInfo.code,
+            app_name: this.props.appInfo.name,
+            project_code: this.props.projectCode,
+            project_id: this.props.projectId,
+            project_name: this.props.projectName
+        }
+
+        if (this.props.mode === 'Modify') {
+
+            const data = {
+                name: this.state.name,
+                app_info: appInfo,
+                is_enabled: this.props.record.is_enabled,
+                interval: this.state.interval,
+                threshold: this.state.threshold,
+                filter_rule: this.state.filterRule,
+                recipients: this.state.recipients,
+                channel_templates: channelTemplates
             }
-        }).catch(error => {
-            message.error(error.response.request.responseText)
-        })
+
+            axios.put(
+                `/alert/v1/projects/${projectId}/appalarmrule/${id}`, data
+            ).then(res => {
+
+                if (res) {
+                    message.success('修改规则成功')
+                    this.props.handleOkModifyAdd()
+                } 
+                else {
+                    message.success('修改规则失败')
+                }
+            }).catch(error => {
+                message.error(error.response.request.responseText)
+            })
+        } else if (this.props.mode === 'Add') {
+    
+            const data = {
+                name: this.state.name,
+                app_info: appInfo,
+                is_enabled: true,
+                interval: this.state.interval,
+                threshold: this.state.threshold,
+                filter_rule: this.state.filterRule,
+                recipients: this.state.recipients,
+                channel_templates: channelTemplates
+            }
+
+            axios.post(
+                `/alert/v1/projects/${projectId}/appalarmrule`, data
+            ).then(res => {
+                if (res) {
+                    message.success('新增规则成功')
+                    this.props.handleOkModifyAdd()
+                } else {
+                    message.success('修改规则失败')
+                }
+            }).catch(error => {
+                message.error(error.response.request.responseText)
+            })
+        }
     }
 
     render() {
@@ -511,7 +754,7 @@ class SidebarModify extends Component {
             <Sidebar
                 title="修改"
                 visible={this.props.visible}
-                onOk={() => this.handleOkModify()}
+                onOk={() => this.handleOkModifyAdd()}
                 onCancel={this.props.handleCancelModify}
                 cancelText="取消"
                 okText="确定"
@@ -615,7 +858,7 @@ class SidebarModify extends Component {
                                             <Button
                                                 className="marginL20"
                                                 funcType="raised"
-                                                onClick={() => this.handleAddSub(index, subIndex)}
+                                                onClick={() => this.handleAddSub(index)}
                                             >
                                                 +
                                             </Button>
@@ -673,16 +916,18 @@ class SidebarModify extends Component {
                                                 <Input style={{width: 300}} placeholder="字段对应值" value={subItem.query} onChange={e => this.handleSubItemInput(e, subIndex, index, 'query')} />
                                             </span>
                                             <Select style={{width: 80}} placeholder="关系" value={subItem.relation} onSelect={value => this.handleSubItemSelect(value, subIndex, index, 'relation')} className="marginL20">
-                                                {this.state.subRelationOpt.map(optItem =>
-                                                    <Select.Option key={optItem}>
-                                                        {optItem}
-                                                    </Select.Option>
-                                                )}
+                                                {
+                                                    this.state.subRelationOpt.map(optItem =>
+                                                        <Select.Option key={optItem}>
+                                                            {optItem}
+                                                        </Select.Option>
+                                                    )
+                                                }
                                             </Select>
                                             <Button
                                                 className="marginL20"
                                                 funcType="raised"
-                                                onClick={() => this.handleAddSub(index, subIndex)}
+                                                onClick={() => this.handleAddSub(index)}
                                             >
                                                 +
                                             </Button>
@@ -718,10 +963,11 @@ class SidebarModify extends Component {
                         optionFilterProp="children"
                         value={this.state.values}
                         onChange={this.handleMultSelect}
+                        onSearch={this.handleRemoteSearch}
                         filter
                     >
                         {
-                            this.props.getUsers.length ? this.props.getUsers.map(item => 
+                            this.state.getUsers.length ? this.state.getUsers.map(item => 
                                 <Select.Option key={item.id} value={item.username}>{item.username}</Select.Option>) : null
                         }
                     </Select>
@@ -744,4 +990,4 @@ class SidebarModify extends Component {
     }
 }
 
-export default SidebarModify
+export default SidebarModifyAdd
