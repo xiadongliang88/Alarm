@@ -4,16 +4,22 @@ import { Modal } from 'choerodon-ui'
 const { Sidebar } = Modal
 
 const contentsDOM = props => {
+
     let channelAry = []
 
     for (const key in props.record.channel_templates) {
-        let label
+        let label  //  -> sms, wechat, email
+        
+        if (key === 'sms') {
+            label = '短信'
+        }
+        if (key === 'wechat') {
+            label = '企业微信'
+        }
 
-        if (key === 'sms') return label = '短信'
-
-        if (key === 'wechat') return label = '企业微信'
-
-        if (key === 'email') return label = '邮件'
+        if (key === 'email') {
+            label = '邮件'
+        }
 
         channelAry.push({
             key: key,
@@ -51,6 +57,7 @@ const contentsDOM = props => {
 }
 
 const SidebarDetails = props => {
+
     return (
         <Sidebar
             title="详情"
