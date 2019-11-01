@@ -1,11 +1,8 @@
 import React, { Component, Fragment } from 'react'
-import { withRouter } from "react-router-dom"
-import { injectIntl } from 'react-intl'
 import { Table, Button, Layout, Select, List, message, Icon, Switch, Modal, Spin} from 'choerodon-ui'
-import { Action, Content, Header, Page, stores, axios} from "choerodon-front-boot"
+import { Action, Content, Header, Page, stores, axios} from 'choerodon-front-boot'
 import SidebarDetails from './Sidebar/SidebarDetails'
-import SidebarModify from './Sidebar/SidebarModify'
-import SidebarAdd from './Sidebar/SidebarAdd'
+import SidebarModifyAdd from './Sidebar/SidebarModifyAdd'
 import RefreshBtn from './RefreshBtn'
 import '../../main.scss'
 import './AlarmStrategy.scss'
@@ -14,18 +11,19 @@ let { AppState } = stores
 let children
 
 class AlarmStrategy extends Component {
+
     state = {
         appList: [],
         appSelected: '',
         alarmStrategy: [],
         record: {
             details: null,
-            modify: null,
+            modifyAdd: null,
             discontinue: null,
         },
         visible: {
             details: false,
-            modify: false,
+            modifyAdd: false,
             add: false
         },
         isEnabled: null,
@@ -40,11 +38,12 @@ class AlarmStrategy extends Component {
             pageSize: 0,
             current: 1
         },
-        modifyKey: 0,
-        addKey: 2
+        modifyAddKey: 0,
+        mode: ''
     }
 
     componentDidMount() {
+
         const projectId = parseInt(
             AppState.currentMenuType.projectId
         )
@@ -58,16 +57,15 @@ class AlarmStrategy extends Component {
     }
 
     reload = () => {
-        const { projectId, appCode } = this.state
 
+        const { projectId, appCode } = this.state
         this.fetchData(projectId, appCode)
-        this.initAppList(projectId, '')
         this.getUsers(projectId)
     }
 
     handleSelectApp = value => {
-        let newValueObj = {}
 
+        let newValueObj = {}
         for (const item of this.state.appList) {
             if (value === item.id) {
                 newValueObj = item
@@ -88,6 +86,7 @@ class AlarmStrategy extends Component {
     }
 
     initAppList(projectId, condition) {
+
         axios.get(
             `/devops/v1/projects/${projectId}/apps`
         ).then(response => {
@@ -113,6 +112,7 @@ class AlarmStrategy extends Component {
         axios.get(
             `iam/v1/projects/${projectId}`
         ).then(response => {
+
             this.setState({
                 projectCode: response.code,
                 projectName: response.name
@@ -121,6 +121,7 @@ class AlarmStrategy extends Component {
     }
 
     handleResults(results) {
+
         this.setState({
             alarmStrategy: results,
             loading: false
@@ -128,12 +129,14 @@ class AlarmStrategy extends Component {
     }
 
     fetchData(projectId, appCode) {
+
         const pageSize = 10
         const pageNum = 1
 
         axios.get(
             `/alert/v1/projects/${projectId}/appalarmrule?pageNum=${pageNum}&pageSize=${pageSize}&app_code=${appCode}`
         ).then(response => {
+
             this.setState({
                 pagination: {
                     total: response.count,
@@ -147,15 +150,16 @@ class AlarmStrategy extends Component {
     }
 
     getUsers = projectId => {
+
         axios.get(
             `/iam/v1/projects/${projectId}/users?size=40`
         ).then(response => {
-            let newAry = []
 
+            let newAry = []
             for (const item of response.content) {
                 newAry.push({
                     id: item.id,
-                    username: item.realName
+                    username: item.realName  //  username
                 })
             }
 
@@ -166,71 +170,101 @@ class AlarmStrategy extends Component {
     }
 
     handleSidebar = (text, record, variable) => {
+
         if (variable === 'modify') {
-            if (this.state.modifyKey === 0) {
-                this.setState({ modifyKey: 1 })
-            } else {
-                this.setState({ modifyKey: 0 })
+
+            if (this.state.modifyAddKey === 0) {
+                this.setState({ modifyAddKey: 1 })
             }
+            else {
+                this.setState({ modifyAddKey: 0 })
+            }
+
+            this.setState({
+                visible: {
+                    ...this.state.visible,
+                    modifyAdd: true
+                },
+                record: {
+                    ...this.state.record,
+                    modifyAdd: record
+                },
+                mode: 'Modify'
+            })
+        } 
+        else if (variable === 'add') {
+
+            if (this.state.modifyAddKey === 0) {
+                this.setState({
+                    modifyAddKey: 1
+                })
+            }
+            else {
+                this.setState({
+                    modifyAddKey: 0
+                })
+            }
+
+            this.setState({
+                visible: {
+                    ...this.state.visible,
+                    modifyAdd: true
+                },
+                record: {
+                    ...this.state.record,
+                    modifyAdd: record
+                },
+                mode: 'Add'
+            })
         }
+        else if (variable === 'details') {
 
-        this.setState({
-            visible: {
-                ...this.state.visible,
-                [variable]: true
-            },
-            record: {
-                ...this.state.record,
-                [variable]: record
-            }
-        })
-    }
-
-    handleSidebarAdd = variable => {
-        this.setState({
-            visible: {
-                ...this.state.visible,
-                [variable]: true
-            }
-        })
-
-        setTimeout(() => {
-            if (this.state.addKey === 2) {
-                this.setState({ addKey: 3 })
-            } else {
-                this.setState({ addKey: 2 })
-            }
-        }, 0)
+            this.setState({
+                visible: {
+                    ...this.state.visible,
+                    details: true
+                },
+                record: {
+                    ...this.state.record,
+                    details: record
+                }
+            })
+        }
     }
 
     handleOkDetails = () => {
+
         this.hideSidebar('details')
     }
 
     handleCancelDetails = () => {
+
         this.hideSidebar('details')
     }
 
-    handleOkModify = () => {
-        this.hideSidebar('modify')
+    handleOkModifyAdd = () => {
 
+        this.hideSidebar('modifyAdd')
         const { projectId, appCode } = this.state
         this.fetchData(projectId, appCode)
     }
 
     handleCancelModify = () => {
-        this.hideSidebar('modify')
+
+        this.hideSidebar('modifyAdd')
     }
 
     handleDiscontinue = (text, record) => {
-        const { projectId, appCode } = this.state
 
+        const { projectId, appCode } = this.state
         this.setState({ loading: true })
 
         if (record.is_enabled === true) {
+
             axios.post(
                 `/alert/v1/projects/${projectId}/appalarmrule/${record.id}/disable`
             ).then(response => {
+
                 if (response) {
                     this.fetchData(projectId, appCode)
 
@@ -242,9 +276,11 @@ class AlarmStrategy extends Component {
             })
         }
         else if (record.is_enabled === false) {
+
             axios.post(
                 `/alert/v1/projects/${projectId}/appalarmrule/${record.id}/enable`
             ).then(response => {
+
                 if (response) {
                     this.fetchData(projectId, appCode)
 
@@ -258,6 +294,7 @@ class AlarmStrategy extends Component {
     }
 
     hideSidebar = variable => {
+
         this.setState({
             visible: {
                 ...this.state.visible,
@@ -267,18 +304,19 @@ class AlarmStrategy extends Component {
     }
 
     handleOkAdd = () => {
+
         this.hideSidebar('add')
-
         const { projectId, appCode } = this.state
-
         this.fetchData(projectId, appCode)
     }
 
     handleCancelAdd = () => {
+
         this.hideSidebar('add')
     }
 
     handlePageOnChange = page => {
+
         this.setState({
             pagination: {
                 ...this.state.pagination,
@@ -289,14 +327,17 @@ class AlarmStrategy extends Component {
 
         const { projectId, appCode } = this.state
 
+        // -> /v1/appalarmrule 告警策略列表
         axios.get(
             `/alert/v1/projects/${projectId}/appalarmrule?pageNum=${page.current}&pageSize=${page.pageSize}&app_name=${appCode}`
         ).then(response => {
+
             this.handleResults(response.results)
         })
     }
 
     render() {
+
         const columns = [
             {
                 title: '策略名称',
@@ -443,7 +484,8 @@ class AlarmStrategy extends Component {
                     >
                         {this.state.appList.length ? this.state.appList.map(item => <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>) : null}
                     </Select>
-                    <Button onClick={() => this.handleSidebarAdd('add')}>
+                    {/* <Button onClick={() => this.handleSidebarAdd('add')}> */}
+                    <Button onClick={() => this.handleSidebar('', {}, 'add')}>
                         新增策略
                     </Button>
                     <RefreshBtn reload={this.reload} />
@@ -459,16 +501,16 @@ class AlarmStrategy extends Component {
                             <Table
                                 rowKey={record => record.id}
                                 className="c7n-devops-instance-table marginT5"
-                                dataSource={this.state.alarmStrategy}
+                                dataSource={this.state.alarmStrategy}  //  -> 数据
                                 columns={columns}
-                                pagination={{
+                                pagination={{  //  -> 分页
                                     total: this.state.pagination.total,
                                     pageSize: this.state.pagination.pageSize,
                                     current: this.state.pagination.current,
                                     pageSizeOptions: ['10', '30', '50', '100'],
                                     defaultCurrent: 1
                                 }}
-                                onChange={this.handlePageOnChange}
+                                onChange={this.handlePageOnChange}  //  -> 分页动作
                                 selections={true}
                             >
                             </Table>
@@ -486,35 +528,25 @@ class AlarmStrategy extends Component {
                     : null
                 }
                 {
-                    this.state.record.modify ?
-                        <SidebarModify
-                            key={this.state.modifyKey}
-                            record={this.state.record.modify}
-                            visible={this.state.visible.modify}
-                            handleOkModify={this.handleOkModify}
+                    this.state.record.modifyAdd ?
+                        <SidebarModifyAdd
+                            key={this.state.modifyAddKey}
+                            record={this.state.record.modifyAdd}
+                            visible={this.state.visible.modifyAdd}
+                            handleOkModifyAdd={this.handleOkModifyAdd}
                             handleCancelModify={this.handleCancelModify}
                             projectId={this.state.projectId}
+                            projectCode={this.state.projectCode}
+                            projectName={this.state.projectName}
                             getUsers={this.state.users}
                             appInfo={this.state.appSelected}
+                            mode={this.state.mode}
                         />
                     : null
-                }
-                {
-                    <SidebarAdd
-                        key={this.state.addKey}
-                        visible={this.state.visible.add}
-                        handleOkAdd={this.handleOkAdd}
-                        handleCancelAdd={this.handleCancelAdd}
-                        projectId={this.state.projectId}
-                        projectCode={this.state.projectCode}
-                        projectName={this.state.projectName}
-                        getUsers={this.state.users}
-                        appInfo={this.state.appSelected}
-                    />
                 }
             </Page>
         )
     }
 }
 
-export default withRouter(injectIntl(AlarmStrategy))
+export default AlarmStrategy
