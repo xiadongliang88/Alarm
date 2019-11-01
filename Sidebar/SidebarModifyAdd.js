@@ -8,6 +8,7 @@ const { Sidebar } = Modal
 let children = []
 
 class SidebarModifyAdd extends PureComponent {
+
     constructor(props) {
         super(props)
     }
