@@ -115,7 +115,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     componentDidMount() {
-
         const recipients = [ ...this.state.recipients ]
 
         let recipientsUsers = []
@@ -136,7 +135,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     initChannel = () => {
-
         let channelAry = [ ...this.state.channelAry ]
         let channelOptAry = [ ...this.state.channelOptAry ]
 
@@ -195,7 +193,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     loopTemp(temp) {
-
         let channelAry = []
 
         const words = [
@@ -217,7 +214,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleChannelAry() {
-
         let temp = []
         const channelTemplates = { ...this.props.record.channel_templates }
 
@@ -235,7 +231,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleInput = (e, variable) => {
-
         if (variable === 'name') {
 
             const projectId = this.props.projectId
@@ -269,7 +264,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleChannelSelect = (value, e, index) => {
-
         let newChannelAry = [ ...this.state.channelAry ]
 
         newChannelAry[index].label = value
@@ -281,7 +275,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleAddChange = (index, e) => {
-
         let newChannelAry = [ ...this.state.channelAry ]
 
         newChannelAry[index].value = e.target.value
@@ -292,7 +285,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleMultSelect = (value, ary) => {
-
         let newAry = []
 
         for (const item of ary) {
@@ -314,7 +306,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleRemoteSearch = value => {
-
         axios.get(
             `/iam/v1/projects/${this.props.projectId}/users?param=${value}`
         ).then(response => {
@@ -334,7 +325,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleAddChannel = () => {
-
         let channelAry = [ ...this.state.channelAry ]
         let channelOptAry = [ ...this.state.channelOptAry ]
 
@@ -388,7 +378,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleDeleteChannel = index => {
-
         let channelAry = [ ...this.state.channelAry ]
         let channelOptAry = [ ...this.state.channelOptAry ]
 
@@ -409,7 +398,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     alarmContent = () => {
-
         return (
             <Fragment>
                 {
@@ -458,7 +446,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleSubItemSelect = (value, subIndex, index, variable) => {
-
         let newList = [ ...this.state.filterRule ]
 
         newList[index].children[subIndex][variable] = value
@@ -469,7 +456,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleSubItemInput = (e, subIndex, index, variable) => {
-
         let newList = [ ...this.state.filterRule ]
 
         newList[index].children[subIndex][variable] = e.target.value
@@ -480,7 +466,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleRelationOutSide = (value, index) => {
-
         let newList = [ ...this.state.filterRule ]
 
         newList[index].relation = value
@@ -491,7 +476,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleAddSub = index => {
-
         let newList = [ ...this.state.filterRule ]
 
         if (newList[index].children) {
@@ -509,7 +493,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleDeleteSub = (index, subIndex) => {
-
         let newList = [ ...this.state.filterRule ]
 
         if (newList[index].children.length > 1) {
@@ -524,7 +507,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleAddItem = () => {
-
         let newList = [ ...this.state.filterRule ]
 
         newList.push({
@@ -545,7 +527,6 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleDeleteItem = index => {
-
         let newList = [ ...this.state.filterRule ]
 
         if (newList.length > 1) {
@@ -560,8 +541,8 @@ class SidebarModifyAdd extends PureComponent {
     }
 
     handleOkModifyAdd = () => {
-
         let filterRuleCheck = true
+
         const channelAry = [ ...this.state.channelAry ]
         const { filterRule } = this.state
 

@@ -43,7 +43,6 @@ class AlarmStrategy extends Component {
     }
 
     componentDidMount() {
-
         const projectId = parseInt(
             AppState.currentMenuType.projectId
         )
@@ -57,15 +56,15 @@ class AlarmStrategy extends Component {
     }
 
     reload = () => {
-
         const { projectId, appCode } = this.state
+
         this.fetchData(projectId, appCode)
         this.getUsers(projectId)
     }
 
     handleSelectApp = value => {
-
         let newValueObj = {}
+
         for (const item of this.state.appList) {
             if (value === item.id) {
                 newValueObj = item
@@ -86,7 +85,6 @@ class AlarmStrategy extends Component {
     }
 
     initAppList(projectId, condition) {
-
         axios.get(
             `/devops/v1/projects/${projectId}/apps`
         ).then(response => {
@@ -112,7 +110,6 @@ class AlarmStrategy extends Component {
         axios.get(
             `iam/v1/projects/${projectId}`
         ).then(response => {
-
             this.setState({
                 projectCode: response.code,
                 projectName: response.name
@@ -121,7 +118,6 @@ class AlarmStrategy extends Component {
     }
 
     handleResults(results) {
-
         this.setState({
             alarmStrategy: results,
             loading: false
@@ -129,7 +125,6 @@ class AlarmStrategy extends Component {
     }
 
     fetchData(projectId, appCode) {
-
         const pageSize = 10
         const pageNum = 1
 
@@ -150,7 +145,6 @@ class AlarmStrategy extends Component {
     }
 
     getUsers = projectId => {
-
         axios.get(
             `/iam/v1/projects/${projectId}/users?size=40`
         ).then(response => {
@@ -170,7 +164,6 @@ class AlarmStrategy extends Component {
     }
 
     handleSidebar = (text, record, variable) => {
-
         if (variable === 'modify') {
 
             if (this.state.modifyAddKey === 0) {
@@ -193,7 +186,6 @@ class AlarmStrategy extends Component {
             })
         } 
         else if (variable === 'add') {
-
             if (this.state.modifyAddKey === 0) {
                 this.setState({
                     modifyAddKey: 1
@@ -218,7 +210,6 @@ class AlarmStrategy extends Component {
             })
         }
         else if (variable === 'details') {
-
             this.setState({
                 visible: {
                     ...this.state.visible,
@@ -233,29 +224,24 @@ class AlarmStrategy extends Component {
     }
 
     handleOkDetails = () => {
-
         this.hideSidebar('details')
     }
 
     handleCancelDetails = () => {
-
         this.hideSidebar('details')
     }
 
     handleOkModifyAdd = () => {
-
         this.hideSidebar('modifyAdd')
         const { projectId, appCode } = this.state
         this.fetchData(projectId, appCode)
     }
 
     handleCancelModify = () => {
-
         this.hideSidebar('modifyAdd')
     }
 
     handleDiscontinue = (text, record) => {
-
         const { projectId, appCode } = this.state
         this.setState({ loading: true })
 
@@ -276,7 +262,6 @@ class AlarmStrategy extends Component {
             })
         }
         else if (record.is_enabled === false) {
-
             axios.post(
                 `/alert/v1/projects/${projectId}/appalarmrule/${record.id}/enable`
             ).then(response => {
@@ -294,7 +279,6 @@ class AlarmStrategy extends Component {
     }
 
     hideSidebar = variable => {
-
         this.setState({
             visible: {
                 ...this.state.visible,
@@ -304,19 +288,16 @@ class AlarmStrategy extends Component {
     }
 
     handleOkAdd = () => {
-
         this.hideSidebar('add')
         const { projectId, appCode } = this.state
         this.fetchData(projectId, appCode)
     }
 
     handleCancelAdd = () => {
-
         this.hideSidebar('add')
     }
 
     handlePageOnChange = page => {
-
         this.setState({
             pagination: {
                 ...this.state.pagination,
@@ -337,7 +318,6 @@ class AlarmStrategy extends Component {
     }
 
     render() {
-
         const columns = [
             {
                 title: '策略名称',

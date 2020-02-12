@@ -16,7 +16,6 @@ const contentsDOM = props => {
         if (key === 'wechat') {
             label = '企业微信'
         }
-
         if (key === 'email') {
             label = '邮件'
         }
