@@ -11,7 +11,6 @@ let { AppState } = stores
 let children
 
 class AlarmStrategy extends Component {
-
     state = {
         appList: [],
         appSelected: '',

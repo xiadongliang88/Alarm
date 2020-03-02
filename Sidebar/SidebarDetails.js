@@ -4,7 +4,6 @@ import { Modal } from 'choerodon-ui'
 const { Sidebar } = Modal
 
 const contentsDOM = props => {
-
     let channelAry = []
 
     for (const key in props.record.channel_templates) {
@@ -56,7 +55,6 @@ const contentsDOM = props => {
 }
 
 const SidebarDetails = props => {
-
     return (
         <Sidebar
             title="详情"

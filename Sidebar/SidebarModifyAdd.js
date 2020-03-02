@@ -8,7 +8,6 @@ const { Sidebar } = Modal
 let children = []
 
 class SidebarModifyAdd extends PureComponent {
-
     constructor(props) {
         super(props)
     }
@@ -139,13 +138,9 @@ class SidebarModifyAdd extends PureComponent {
         let channelOptAry = [ ...this.state.channelOptAry ]
 
         if (channelAry.length === 1) {
-
             let channelOptOrg = [ ...this.state.channelOptOrg ]
-
             channelOptAry.push(channelOptOrg)
-
         } else if (channelAry.length === 2 || channelAry.length === 3) {
-
             let channelOptOrg = [ ...this.state.channelOptOrg ]
             let labelIndex1
             let labelIndex2
